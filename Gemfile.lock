@@ -1,0 +1,19 @@
+PATH
+  remote: .
+  specs:
+    s3copy (0.0.1)
+      s3 (>= 0.3.11)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    proxies (0.2.1)
+    s3 (0.3.11)
+      proxies (~> 0.2.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  s3 (>= 0.3.11)
+  s3copy!

@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+require 'commandline'
+
+cmdparser = S3Copy::CommandLine.new(ARGV)
+
+if migrator.missing_arguments?
+  cmdparser.show_help
+  exit
+else
+  puts "go!"
+end
