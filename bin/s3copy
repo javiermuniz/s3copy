@@ -1,11 +1,42 @@
 #!/usr/bin/env ruby
 require 'commandline'
+require 's3'
 
-cmdparser = S3Copy::CommandLine.new(ARGV)
+args = S3Copy::CommandLine.new(ARGV)
 
-if migrator.missing_arguments?
-  cmdparser.show_help
+if args.missing_arguments?
+  args.show_help
   exit
 else
-  puts "go!"
+  # connect up to S3
+  in_service = S3::Service.new(:access_key_id => args.in_key, :secret_access_key => args.in_secret)
+  out_service = S3::Service.new(:access_key_id => (args.out_key || args.in_key), 
+                                :secret_access_key => (args.out_secret || args.in_secret))
+    
+  # get the buckets                            
+  in_bucket = in_service.buckets.find(args.in_bucket)
+  out_bucket = in_service.buckets.find(args.out_bucket)
+  
+  # get object lists
+  objects = []
+  if args.all.nil?
+    key = STDIN.gets
+    while !key.nil?
+      key.chomp!
+      object = in_bucket.object(key)
+      objects << object
+      key = STDIN.gets
+    end
+  else
+    objects = in_bucket.objects
+  end
+  
+  # begin copy
+  objects.each do |object|
+    copy = out_bucket.objects.build(object.key)
+    copy.content = object.content
+    copy.content_type = object.content_type
+    copy.save
+    puts "Copied #{object.key}"
+  end
 end
