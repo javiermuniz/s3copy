@@ -1,5 +1,3 @@
-require 'granicus-platform-api'
-require 'faraday_middleware'
 require 'optparse'
 
 module S3Copy
