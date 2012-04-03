@@ -26,7 +26,7 @@ else
       begin
         object = in_bucket.object(key)
         objects << object
-      rescue Exception => e 
+      rescue Exception => e
         puts "Failed to get key #{key} from input bucket: #{e.message}" 
       end
       key = STDIN.gets
@@ -37,6 +37,12 @@ else
   
   # begin copy
   objects.each do |object|
+    begin
+      exists = out_bucket.object(key)
+      puts "Skipping key #{object.key} because it already exists."
+      next
+    rescue
+    end
     begin
       copy = out_bucket.objects.build(object.key)
       copy.content = object.content
