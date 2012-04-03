@@ -38,7 +38,7 @@ else
   # begin copy
   objects.each do |object|
     begin
-      exists = out_bucket.object(key)
+      exists = out_bucket.objects.find(object.key)
       puts "Skipping key #{object.key} because it already exists."
       next
     rescue
