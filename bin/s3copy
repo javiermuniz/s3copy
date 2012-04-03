@@ -15,7 +15,7 @@ else
     
   # get the buckets                            
   in_bucket = in_service.buckets.find(args.in_bucket)
-  out_bucket = in_service.buckets.find(args.out_bucket)
+  out_bucket = out_service.buckets.find(args.out_bucket)
   
   # get object lists
   objects = []
@@ -23,8 +23,12 @@ else
     key = STDIN.gets
     while !key.nil?
       key.chomp!
-      object = in_bucket.object(key)
-      objects << object
+      begin
+        object = in_bucket.object(key)
+        objects << object
+      rescue Exception => e 
+        puts "Failed to get key #{key} from input bucket: #{e.message}" 
+      end
       key = STDIN.gets
     end
   else
@@ -33,10 +37,14 @@ else
   
   # begin copy
   objects.each do |object|
-    copy = out_bucket.objects.build(object.key)
-    copy.content = object.content
-    copy.content_type = object.content_type
-    copy.save
-    puts "Copied #{object.key}"
+    begin
+      copy = out_bucket.objects.build(object.key)
+      copy.content = object.content
+      copy.content_type = object.content_type
+      copy.save
+      puts "Copied #{object.key}"
+    rescue Exception => e
+       puts "Failed to write key #{object.key} to output bucket: #{e.message}" 
+    end
   end
 end
